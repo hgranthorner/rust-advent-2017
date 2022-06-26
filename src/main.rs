@@ -1,7 +1,5 @@
 #![allow(dead_code)]
 
-use std::path::Path;
-
 mod day_one;
 mod day_two;
 
