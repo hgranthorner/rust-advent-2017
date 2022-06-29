@@ -25,6 +25,12 @@ struct SpiralNode {
     value: usize,
 }
 
+impl SpiralNode {
+    pub fn new(value: usize, pos: (i32, i32)) -> Self {
+        SpiralNode { pos, value }
+    }
+}
+
 fn move_pos(pos: (i32, i32), dir: &Direction) -> (i32, i32) {
     match dir {
         Direction::Up => (pos.0, pos.1 + 1),
@@ -95,7 +101,7 @@ fn populate_spiral(max_num: usize) -> Vec<SpiralNode> {
     spiral
 }
 
-fn populate_spiral_2(max_num: usize) -> HashMap<(i32, i32), usize> {
+fn populate_spiral_2(max_num: usize) -> usize {
     let mut spiral = HashMap::with_capacity(max_num);
 
     let mut dir = Direction::Right;
@@ -107,9 +113,10 @@ fn populate_spiral_2(max_num: usize) -> HashMap<(i32, i32), usize> {
 
     let mut pos = (1, 0);
 
-    for _n in 1..max_num {
+    loop {
         let value = {
-            let mut surrounding = Vec::with_capacity(8);
+            let mut surrounding = [0; 8];
+            let mut counter = 0;
             for dx in -1..2 {
                 for dy in -1..2 {
                     if dx == 0 && dy == 0 {
@@ -117,13 +124,19 @@ fn populate_spiral_2(max_num: usize) -> HashMap<(i32, i32), usize> {
                     }
 
                     if let Some(v) = spiral.get(&(pos.0 + dx, pos.1 + dy)) {
-                        surrounding.push(*v);
+                        surrounding[counter] = *v;
                     }
+
+                    counter += 1;
                 }
             }
 
             surrounding.iter().sum()
         };
+
+        if value > max_num {
+            return value;
+        }
 
         spiral.insert(pos, value);
 
@@ -142,8 +155,6 @@ fn populate_spiral_2(max_num: usize) -> HashMap<(i32, i32), usize> {
 
         pos = move_pos(pos, &dir);
     }
-
-    spiral
 }
 
 #[cfg(test)]
@@ -168,18 +179,9 @@ mod tests {
             format!(
                 "{:?}",
                 vec![
-                    SpiralNode {
-                        value: 1,
-                        pos: (0, 0)
-                    },
-                    SpiralNode {
-                        value: 2,
-                        pos: (1, 0)
-                    },
-                    SpiralNode {
-                        value: 3,
-                        pos: (1, 1)
-                    }
+                    SpiralNode::new(1, (0, 0)),
+                    SpiralNode::new(2, (1, 0)),
+                    SpiralNode::new(3, (1, 1)),
                 ]
             )
         );
@@ -189,46 +191,46 @@ mod tests {
             format!(
                 "{:?}",
                 vec![
-                    SpiralNode {
-                        value: 1,
-                        pos: (0, 0)
-                    },
-                    SpiralNode {
-                        value: 2,
-                        pos: (1, 0)
-                    },
-                    SpiralNode {
-                        value: 3,
-                        pos: (1, 1)
-                    },
-                    SpiralNode {
-                        value: 4,
-                        pos: (0, 1)
-                    },
-                    SpiralNode {
-                        value: 5,
-                        pos: (-1, 1)
-                    },
-                    SpiralNode {
-                        value: 6,
-                        pos: (-1, 0)
-                    },
-                    SpiralNode {
-                        value: 7,
-                        pos: (-1, -1)
-                    },
-                    SpiralNode {
-                        value: 8,
-                        pos: (0, -1)
-                    },
+                    SpiralNode::new(1, (0, 0)),
+                    SpiralNode::new(2, (1, 0)),
+                    SpiralNode::new(3, (1, 1)),
+                    SpiralNode::new(4, (0, 1)),
+                    SpiralNode::new(5, (-1, 1)),
+                    SpiralNode::new(6, (-1, 0)),
+                    SpiralNode::new(7, (-1, -1)),
+                    SpiralNode::new(8, (0, -1)),
                 ]
             )
         );
     }
+
+    // #[test]
+    // fn test_second_spiral() {
+    //     let mut one_map = HashMap::new();
+    //     one_map.insert((0, 0), 1);
+    //     assert_eq!(populate_spiral_2(1).get(&(0, 0)), one_map.get(&(0, 0)));
+    //     one_map.insert((1, 0), 1);
+    //     assert_eq!(populate_spiral_2(2).get(&(1, 0)), one_map.get(&(1, 0)));
+    //     one_map.insert((1, 1), 2);
+    //     assert_eq!(populate_spiral_2(3).get(&(1, 1)), one_map.get(&(1, 1)));
+
+    //     one_map.insert((0, 1), 4);
+    //     assert_eq!(populate_spiral_2(4).get(&(0, 1)), one_map.get(&(0, 1)));
+
+    //     one_map.insert((-1, 1), 5);
+    //     assert_eq!(populate_spiral_2(5).get(&(-1, 1)), one_map.get(&(-1, 1)));
+    // }
+
     #[test]
     fn get_first_solution() {
         let spiral = populate_spiral(277678);
         let node = spiral.last().unwrap();
         assert_eq!(475, node.pos.0.abs() + node.pos.1.abs());
+    }
+
+    #[test]
+    fn get_second_solution() {
+        let answer = populate_spiral_2(277678);
+        assert_eq!(279138, answer);
     }
 }

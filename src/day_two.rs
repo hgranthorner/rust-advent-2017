@@ -42,12 +42,10 @@ fn determine_divisible_result(row: &str) -> u32 {
     let mut result = 0;
     for i in 0..nums.len() {
         let current_num = nums[i];
-        for j in 0..nums.len() {
+        for (j, comparison_num) in nums.iter().enumerate() {
             if i == j {
                 continue;
             }
-
-            let comparison_num = nums[j];
 
             if current_num % comparison_num == 0 {
                 result = (current_num / comparison_num).max(comparison_num / current_num);
