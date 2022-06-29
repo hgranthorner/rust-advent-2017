@@ -1,14 +1,12 @@
 pub fn validate_passphrase(phrase: &str) -> bool {
     let mut words = [""; 15];
-    let mut counter = 0;
 
-    for w in phrase.split_whitespace() {
+    for (counter, w) in phrase.split_whitespace().enumerate() {
         if words.contains(&w) {
             return false;
         }
 
         words[counter] = w;
-        counter += 1;
     }
 
     true
@@ -16,9 +14,8 @@ pub fn validate_passphrase(phrase: &str) -> bool {
 
 pub fn validate_passphrase_2(phrase: &str) -> bool {
     let mut words: [String; 15] = Default::default();
-    let mut counter = 0;
 
-    for w in phrase.split_whitespace() {
+    for (counter, w) in phrase.split_whitespace().enumerate() {
         let mut sorted = w.chars().collect::<Vec<char>>();
         sorted.sort_unstable();
         let s: String = sorted.into_iter().collect();
@@ -27,7 +24,6 @@ pub fn validate_passphrase_2(phrase: &str) -> bool {
         }
 
         words[counter] = s;
-        counter += 1;
     }
 
     true
